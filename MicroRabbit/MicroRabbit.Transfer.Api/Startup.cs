@@ -41,11 +41,12 @@ namespace MicroRabbit.Transfer.Api
             }
             );
 
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Latest);
+            services.AddControllers();
 
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "Transfer Microservice", Version = "v1" });
+
             });
 
             services.AddMediatR(typeof(Startup));
@@ -59,7 +60,7 @@ namespace MicroRabbit.Transfer.Api
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             if (env.IsDevelopment())
             {
@@ -71,15 +72,16 @@ namespace MicroRabbit.Transfer.Api
                 app.UseHsts();
             }
 
+            app.UseSwagger();
             app.UseHttpsRedirection();
 
-            app.UseSwagger();
+
             app.UseSwaggerUI(c =>
             {
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "Transfer Microservice V1");
+                c.RoutePrefix = string.Empty;
             });
-
-            //app.UseMvc();
+            app.UseRouting();
             app.UseEndpoints(endpoints => endpoints.MapControllers());
 
             ConfigureEventBus(app);
